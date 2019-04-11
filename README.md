@@ -7,8 +7,6 @@ You'll need to install Ruby from rubyinstaller.org if you haven't already.
 
 Then you'll need to install the Watir gem by typing "gem install watir"
 
-Also 
-
 Finally, set up your username and password in the example login.json file. Don't share that info with anyone btw :) 
 
 Run the script from the Ruby Command Prompt (which comes as part of a Ruby install) by typing "ruby 2nd_degree_posts.rb" 
