@@ -42,7 +42,7 @@ puts $links
 $links.each do |link|
 	puts "visiting #{link}"
 	$browser.goto(link)
-	print "Press any key to continue\r"
+	print "Press Enter to continue\r"
 	STDOUT.flush
   	gets
 end
