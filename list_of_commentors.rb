@@ -19,16 +19,13 @@ $browser.text_field(:xpath => "//input[@id='username']").wait_until_present
 $browser.text_field(:xpath => "//input[@id='username']").set(login_info["username"])
 $browser.text_field(:xpath => "//input[@id='password']").set(login_info["password"])
 $browser.element(:xpath => "//button[contains (text(), 'Sign in')]").click
-$browser.element(:xpath => "//input[@aria-label = 'Find people and jobs']").send_keys("Michael Fritzius")
-$browser.send_keys([:enter])
-$browser.element(:xpath => "(//span[contains(text(), 'Michael')])[1]").click
-$browser.element(:xpath => "//a[contains(., 'See all activity')]").click
-$browser.element(:xpath => "//span[contains(., 'Posts')]").click
+sleep 3
+$browser.goto("https://www.linkedin.com/in/fritzops/detail/recent-activity/shares/")
 
-sleep 10
+sleep 3
 # keep looping until you collect the specified number of links
 $links = []
-while $links.size < 2
+while $links.size < 5
   puts "#{$links.size} links found"
   STDOUT.flush
   $browser.driver.execute_script("window.scrollBy(0,500)")
@@ -42,24 +39,27 @@ end
 
 puts
 puts $links
-Dir.mkdir "./posts" unless Dir.exists? "./posts"
-$number = 0
+Dir.mkdir "./2nd_degree_commentors" unless Dir.exists? "./2nd_degree_commentors"
 
 $links.each do |link|
   results = []
-  $number = $number + 1
   puts "visiting #{link}"
   $browser.goto(link)
-  $browser.elements(:xpath => "//button[@data-control-name = 'comment_like_toggle']/../button[@aria-pressed = 'true']").each do |name|
-    if name.exists?
-      results.push($browser.element(:xpath => "//button[@data-control-name = 'comment_like_toggle']/../button[@aria-pressed = 'true']/../../../../div/a").attribute_value("href"))
+  sleep(3)
+  $post_id = $browser.element(:xpath => "//div[contains(@data-id, 'urn:li:activity')]").attribute_value("data-id")
+  $post_id.gsub!("urn:li:activity:","")
+  puts $post_id
+  STDOUT.flush
+  $browser.elements(:xpath => "//button[@data-control-name = 'comment_like_toggle']/../button[@aria-pressed = 'true']/../../../../div/a").each do |person|
+      results.push(person.attribute_value("href"))
       results.sort!.uniq!
-    end
   end
 
-  File.open("post#{$number}.txt", "w+") { |file|
-    results.each do |f|
-      file.write("#{f} \n")
-    end
-  }
+  if results.size > 0
+    File.open("2nd_degree_commentors/post#{$post_id}.txt", "w+") { |file|
+      results.each do |f|
+        file.write("#{f} \n")
+      end
+    }
+  end
 end
